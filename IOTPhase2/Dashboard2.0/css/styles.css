@@ -1,0 +1,15 @@
+body {
+    font-family: sans-serif;
+    background-color: rgb(51, 51, 51);
+  }
+
+.dashboard-component {
+    display: inline;
+    position: relative;
+    float: left;
+    padding: 50px;
+}
+
+h3 {
+    color: aliceblue;
+}
