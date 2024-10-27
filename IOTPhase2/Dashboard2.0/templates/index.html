@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature and Humidity Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='humidity.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='temperature.css') }}"> <!-- Add your temperature CSS file -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='humidity.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='temperature.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script> <!-- Include your main script -->
+</head>
+<body>
+
+    
+    <div class="gauge" id="temperature-gauge">
+        <div id="gauge__body">
+            <div id="gauge__fill"></div>
+            <div id="gauge__cover">0°C</div>
+        </div>
+    </div>
+
+    <div id="fu-progress">
+        <div id="fu-inner">
+            <div id="water"></div>
+            <div id="fu-percent"><span>0%</span></div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+
+
