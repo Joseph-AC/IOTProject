@@ -1,13 +1,27 @@
+/* styles.css */
+body {
+    display: flex;
+    justify-content: center; /* Center the container horizontally */
+    align-items: center; /* Center the container vertically */
+    height: 100vh; /* Full viewport height */
+    background-color: #f0f0f0; /* Optional: Background color */
+    margin: 0; /* Remove default margin */
+}
+
+.container {
+    display: flex; /* Use flexbox to arrange items in a row */
+    justify-content: center; /* Center all items horizontally */
+    align-items: center; /* Align items vertically centered */
+}
 
 .gauge {
-    margin-top: 25%;
+    margin: 10px; /* Add some spacing between the gauges and fan */
     width: 300px;
     height: 300px;
     font-family: "Roboto", sans-serif;
     font-size: 32px;
     color: #004033;
 }
-
 
 #temperature-gauge {
     position: relative;
@@ -55,18 +69,7 @@
     box-sizing: border-box;
 }
 
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-
-#humidity-gauge {
+#fu-progress {
     position: relative;
     width: 250px;
     height: 250px;
@@ -91,9 +94,7 @@
     width: 200%;
     height: 200%;
     transform: translateZ(0);
-    -webkit-transform: translateZ(0);
     transition: all 1s ease !important;
-    -webkit-transition: all 1s ease !important;
     top: 100%;
     left: -50%;
     border: 1px solid transparent;
@@ -115,4 +116,18 @@
     font-weight: bold;
     color: rgb(0, 180, 252);
     text-align: center;
+}
+
+#fan {
+    width: 100px;
+    transition: transform 0.5s; /* Smooth transition for fan spin */
+}
+
+.spin {
+    animation: spin 1s linear infinite; /* Continuous spin */
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
