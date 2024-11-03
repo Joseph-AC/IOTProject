@@ -11,7 +11,13 @@
     <script src="{{ url_for('static', filename='humidity.js') }}" defer></script>
     <script src="{{ url_for('static', filename='temperature.js') }}" defer></script>
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    
+    <script>
+        const fanOnUrl = "{{ url_for('static', filename='fanOn.png') }}";
+        const fanUrl = "{{ url_for('static', filename='fan.png') }}";
+    </script>
     <script src="{{ url_for('static', filename='fan.js') }}" defer></script>
+    
 </head>
 <body>
     <div class="container">
@@ -32,10 +38,11 @@
         </div>
 
         <div id="fan-container">
-            <img id="fan" src="{{ url_for('static', filename='fan.png') }}" alt="Fan Image" />
+            <img id="fan"   src = "{{ url_for('static', filename='fan.png') }}" alt="Fan Image" />
         </div>
     </div>
 </body>
+
 </html>
 
 

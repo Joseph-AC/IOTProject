@@ -6,8 +6,14 @@ import psutil
 import smtplib
 import imaplib
 import email
+import RPi.GPIO as GPIO
+from time import sleep
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
 
 app = Flask(__name__)
 
@@ -20,9 +26,24 @@ for process in psutil.process_iter():
 DHTPin = board.D27  # GPIO pin for DHT11 sensor
 sensor = adafruit_dht.DHT11(DHTPin)
 
+#Motor configuration..
+Motor1 = 22 # Enable Pin
+Motor2 = 18 # Input Pin
+Motor3 = 17 # Input Pin
+GPIO.setup(Motor1,GPIO.OUT)
+GPIO.setup(Motor2,GPIO.OUT)
+GPIO.setup(Motor3,GPIO.OUT)
+
+#so when it starts it starts false.
+GPIO.output(Motor1,GPIO.LOW)
+GPIO.output(Motor2,GPIO.LOW)
+GPIO.output(Motor3,GPIO.LOW)
+
+
+
 # Gmail configuration
-GMAIL_USER = '@gmail.com'
-GMAIL_PASSWORD = 'fjfifr'  # App-specific password
+GMAIL_USER = 'gmail.com'
+GMAIL_PASSWORD = "fjfifr"  # App-specific password
 
 fan_on = False
 email_sent = False
@@ -82,6 +103,7 @@ def check_for_yes_reply():
                                     print("Found 'YES' reply! Turning on the fan...")
                                     mail.store(msg_num, '+FLAGS', '\\Seen')  # Mark as read
                                     fan_on = True  # Turn the fan on
+                                    toggle_fan_ON()
                                     email_sent = False  # Reset email sent status
                                     print("Fan status updated to ON.")
                                     mail.logout()
@@ -97,6 +119,7 @@ def check_for_yes_reply():
                             print("Found 'YES' reply! Turning on the fan...")
                             mail.store(msg_num, '+FLAGS', '\\Seen')  # Mark as read
                             fan_on = True  # Turn the fan on
+                            toggle_fan_ON()
                             email_sent = False  # Reset email sent status
                             print("Fan status updated to ON.")
                             mail.logout()
@@ -118,12 +141,44 @@ def check_for_yes_reply():
 def index():
     return render_template('index.html', fan_on=fan_on)
 
+@app.route('/toggle-fan')  # Changed to POST
+def toggle_fan():
+    global fan_on
+    if not fan_on:
+        GPIO.output(Motor1,GPIO.HIGH)
+        GPIO.output(Motor2,GPIO.LOW)
+        GPIO.output(Motor3,GPIO.HIGH)
+        fan_on = True
+    else:
+        GPIO.output(Motor1,GPIO.LOW)
+        GPIO.output(Motor2,GPIO.LOW)
+        GPIO.output(Motor3,GPIO.LOW)
+        fan_on = False
+
+    return jsonify({'success': True, 'fan': fan_on})  
+
+
+@app.route('/toggle-fan-ON')  # used forr the email. toggle ON 
+def toggle_fan_ON():
+    global fan_on
+    GPIO.output(Motor1,GPIO.HIGH)
+    GPIO.output(Motor2,GPIO.LOW)
+    GPIO.output(Motor3,GPIO.HIGH)
+    fan_on = True
+    
+
 @app.route('/sensor-data')
 def get_sensor_data():
     global fan_on, email_sent, last_temp, last_humidity
     retries = 3
+    #For testing (joseph --> do not touch)
+    #send_email_alert(21)
+    #check_for_yes_reply()
+
+
     for _ in range(retries):
         try:
+           # temp = sensor.temperature
             temp = sensor.temperature
             humidity = sensor.humidity
 
@@ -142,7 +197,7 @@ def get_sensor_data():
                 return jsonify({
                     'temperature': temp,
                     'humidity': humidity,
-                    'fan_on': fan_on  # Return the current fan status
+                    'fan': fan_on  # Return the current fan status
                 })
 
         except RuntimeError as error:
@@ -155,7 +210,7 @@ def get_sensor_data():
         return jsonify({
             'temperature': last_temp,
             'humidity': last_humidity,
-            'fan_on': fan_on
+            'fan': fan_on
         }), 500
     else:
         print("Failed to read sensor data.")
