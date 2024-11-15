@@ -1,0 +1,68 @@
+<html>
+
+<head>
+
+  <script
+  src="https://code.jquery.com/jquery-3.7.1.slim.js"
+  integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc="
+  crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static/css', filename='humidity.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static/css', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static/css', filename='temperature.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static/css', filename='LED.css') }}">
+
+  <script src="{{ url_for('static/js', filename='humidity.js') }}" defer></script>
+  <script src="{{ url_for('static/js', filename='temperature.js') }}" defer></script>
+  <script src="{{ url_for('static/js', filename='LED.js') }}" defer></script>
+
+</head>
+
+<body>
+
+  <div class="content">
+
+    <div class="temphum-dashboard">
+
+      <div class="dashboard-component" id="humidity-db">
+        <h3>Humidity</h3>
+        <div id="fu-progress" onclick="updateHumidity()">   
+          <div id="fu-inner">
+            <div id="fu-percent"><span>0</span>%</div>
+            <div id="water"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-component" id="temperature-db">
+        <h3>Temperature</h3>
+        <div class="gauge" onclick="setGaugeValue(0.05)">
+            <div id="gauge__body">
+                <div id="gauge__fill"></div>
+                <div id="gauge__cover">0</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="dashboard-component" id="lightbulb-db">
+        <h3>LED</h3>
+          <div id="LB-body">
+
+              <img id="LB-img" src="assets/lightbulb-21.png">
+              <div id="LB-cover"></div></img>
+          </div>
+          <br>
+          <span id="LEDValue">0</span>
+          <div class="slidecontainer">
+            <input readonly type="range" min="0" max="500" value="0" class="slider" id="myRange">
+          </div>
+          <span id="notif"></span>
+      </div>
+
+    </div>
+
+  </div>
+    
+
+</body>
+</html>
