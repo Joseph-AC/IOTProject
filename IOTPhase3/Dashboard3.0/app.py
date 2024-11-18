@@ -7,13 +7,13 @@ from time import sleep
 import paho.mqtt.client as mqtt
 
 
-LED_PIN = 17  
+LED = 17  
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)  
-GPIO.setup(LED_PIN, GPIO.OUT)
+GPIO.setup(LED, GPIO.OUT)
 
 #Turning it off at the start
-GPIO.output(LED_PIN, GPIO.LOW)
+GPIO.output(LED, GPIO.LOW)
 print("LED is OFF - Initial state.")
 
 #-------------------------MQTT_SERVER----------------------------------
@@ -42,6 +42,7 @@ def on_message(client, userdata, message):
     else:
         print(f"Intensity: {mqtt_message} (From {message.topic}) (2000 = treshold)")
         #this could be used to translate it to % for the web
+        global intensityData
         intensityData = int(mqtt_message)
         
 # Set up MQTT client and callbacks
