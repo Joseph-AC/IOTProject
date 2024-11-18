@@ -6,15 +6,14 @@
   src="https://code.jquery.com/jquery-3.7.1.slim.js"
   integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc="
   crossorigin="anonymous"></script>
+  <script src="../static/humidity.js" defer></script>
+  <script src="../static/LED.js" defer></script>
+  <script src="../static/temperature.js" defer></script>
+  <link rel="stylesheet" href="../static/humidity.css">
+  <link rel="stylesheet" href="../static/LED.css">
+  <link rel="stylesheet" href="../static/styles.css">
+  <link rel="stylesheet" href="../static/temperature.css">
 
-  <link rel="stylesheet" href="{{ url_for('static/css', filename='humidity.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static/css', filename='styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static/css', filename='temperature.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static/css', filename='LED.css') }}">
-
-  <script src="{{ url_for('static/js', filename='humidity.js') }}" defer></script>
-  <script src="{{ url_for('static/js', filename='temperature.js') }}" defer></script>
-  <script src="{{ url_for('static/js', filename='LED.js') }}" defer></script>
 
 </head>
 
@@ -48,7 +47,7 @@
         <h3>LED</h3>
           <div id="LB-body">
 
-              <img id="LB-img" src="assets/lightbulb-21.png">
+              <img id="LB-img" src="../static/lightbulb-21.png">
               <div id="LB-cover"></div></img>
           </div>
           <br>
