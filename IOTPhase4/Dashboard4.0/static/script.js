@@ -1,3 +1,7 @@
+var temperatureThreshold = 35;
+var lightThreshold = 2000;
+
+
 var animateValue = function animateValue (newPercent, elem) {
     //elem = elem || $('#fu-percent span');
     const val = parseInt(elem.text(), 10);
@@ -8,6 +12,24 @@ var animateValue = function animateValue (newPercent, elem) {
         setTimeout(animateValue.bind(null, newPercent, elem), 5);
     }
 }; 
+
+async function fetchJSONData(userID) {
+    try {
+        const response = await fetch("../static/userList.json");
+        
+    
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        console.log(data[userID]);
+
+    } catch (error) {
+        console.error('Error fetching sensor data:', error);
+    }   
+}
 
 function setHumidity(newHum)
 {
@@ -100,10 +122,10 @@ async function updateLED() {
             throw new Error('Invalid data received from the server.');
         }
 
-        output.style.opacity = (LED_Intensity/2000);
+        output.style.opacity = (LED_Intensity/4500);
         output_value.innerHTML = LED_Intensity;
 
-        if (LED_Intensity < 2000)
+        if (LED_Intensity < lightThreshold)
         {        
             notif.innerHTML = "Email has been sent."
             if (sentEmail == false)
@@ -122,10 +144,42 @@ async function updateLED() {
     }
 }
 
-function transmitData()
+async function updateProfile()
 {
-    updateLED();
-    updateHumTemp();
+    try {
+        const response = await fetch('/profile');
+        
+    
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        console.log("Data received.");
+        console.log(data);
+
+        temperatureThreshold = parseFloat(data.tempThreshold);
+        lightThreshold = parseFloat(data.lightThreshold)
+        
+        if (isNaN(temperatureThreshold) && isNaN(lightThreshold)) {
+            throw new Error('Invalid data received from the server.');
+        }
+
+        fetchJSONData(data.userID);
+        //console.log("TT: " + temperatureThreshold + "| LT: " + lightThreshold);
+
+    } catch (error) {
+        console.error('Error fetching sensor data:', error);
+    }
 }
 
-//setInterval(transmitData, 5000);
+function transmitData()
+{
+    updateProfile();
+    //updateLED();
+   // updateHumTemp();
+}
+
+transmitData();
+setInterval(transmitData, 5000);
