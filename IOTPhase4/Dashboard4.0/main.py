@@ -1,4 +1,9 @@
+
 from flask import Flask, jsonify, render_template
+
+import RFID
+
+
 
 app = Flask(__name__)
 
@@ -11,8 +16,12 @@ def index():
 @app.route('/sensor-data')
 def get_sensor_data():
     return jsonify({
-                    'intensity': intensityData,
+                    'intensity': 1500,#intensityData,
                 })
+
+@app.route('/profile')
+def get_profile_data():
+    return jsonify(RFID.profileData())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
