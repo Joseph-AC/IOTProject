@@ -4,11 +4,8 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 import time
 from time import sleep
-import paho.mqtt.client as mqtt
-from flask import Flask, jsonify, render_template
 
-
-app = Flask(__name__)
+#app = Flask(__name__)
 
 LED = 17  
 GPIO.setmode(GPIO.BCM)
@@ -19,51 +16,11 @@ GPIO.setup(LED, GPIO.OUT)
 GPIO.output(LED, GPIO.LOW)
 print("LED is OFF - Initial state.")
 
-#-------------------------MQTT_SERVER----------------------------------
 
-#Info for MQTTSettings
-# MQTT Settings
-mqtt_broker = ""  # IP of the MQTT broker (insert)
-mqtt_port = 1883  
-mqtt_topic = "IoTlab/INTENSITY"  # The topic to subscribe for the intensity (1023)
-
-
-#Info for intensity + MQTT message
+#Info for intensity
 intensityData = 0
-mqtt_message = ""
 from RFID import userTempThreshold #put this for the light code.
 from RFID import userLightThreshold
-
-# Set up MQTT client
-
-client = mqtt.Client()  # Create a new MQTT client instance
-
-
-# Define the callback function that will be called when a message is received
-def on_message(client, userdata, message):
-    global mqtt_message
-    mqtt_message = message.payload.decode("utf-8")  # Decode the MQTT message
-    if message.topic =="IoTlab/INTENSITY":
-        print(f"Intensity: {mqtt_message} (From {message.topic})")
-        #this could be used to translate it to % for the web
-        global intensityData
-        intensityData = int(mqtt_message)
-        
-# Set up  callbacks
-client.on_message = on_message  # Define the callback function for incoming messages
-
-def mqtt_loop():
-
-
-# Connect to the MQTT broker
-    client.connect(mqtt_broker, mqtt_port, 60)
-
-# Subscribe to the topic
-    client.subscribe(mqtt_topic)
-
-# Start a background thread to listen for messages
-    client.loop_start()
-#-------------------------MQTT_SERVER----------------------------------
 
 #-------------------------EMAIL----------------------------------
 
@@ -122,58 +79,66 @@ def send_email():
 
 # 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+#@app.route('/')
+#def index():
+#    return render_template('index.html')
 
-@app.route('/sensor-data')
-def get_sensor_data():
-    return jsonify({
-                    'intensity': intensityData,
-                })
+#@app.route('/sensor-data')
+#def get_sensor_data():
+ #   return jsonify({
+ #                   'intensity': intensityData,
+ #               })
 
 #I need explanation for this --> userThreshold
 
 def led_control_loop():
-try:
-    while True:
-        # Check the received MQTT message and control the LED based on the message
-        if userLightThreshold < intensityData:
-            print("LIGHT ON-----------------")
-            GPIO.output(LED, GPIO.HIGH)  # Turn on the LED if the message indicates it is dark
-            send_email()
-        elif userLightThreshold > intensityData:
-            print("TURN OFF-----------------")
-            GPIO.output(LED, GPIO.LOW)  # Turn off the LED if the message indicates it is not dark
-        sleep(1)  # Sleep for 1 second
+    try:
+        while True:
+            # Check the received MQTT message and control the LED based on the message
+            if userLightThreshold < intensityData:
+                print("LIGHT ON-----------------")
+                GPIO.output(LED, GPIO.HIGH)  # Turn on the LED if the message indicates it is dark
+                send_email()
+            elif userLightThreshold > intensityData:
+                print("TURN OFF-----------------")
+                GPIO.output(LED, GPIO.LOW)  # Turn off the LED if the message indicates it is not dark
+            sleep(1)  # Sleep for 1 second
 
-except KeyboardInterrupt:
-    print("Program interrupted")
+    except KeyboardInterrupt:
+        print("Program interrupted")
     
+def LEDData():
+    ledData = {
+        "intensity": intensityData,
+    }
+    return ledData
 
+def set_IntensityData(mqtt_message):
+    global intensityData
+    intensityData = mqtt_message
 
-finally:
-    # Cleanup GPIO and stop MQTT client when exiting
-    GPIO.cleanup()
-    client.loop_stop()  # Stop the MQTT client loop
-    client.disconnect()  # Disconnect from the MQTT broker
-    
-if __name__ == '__main__':
-    # Start MQTT client loop in a new thread
-    mqtt_thread = threading.Thread(target=mqtt_loop)
-    mqtt_thread.daemon = True  # Make the thread exit when the main program exits
-    mqtt_thread.start()
+#if __name__ == '__main__':
+    #try:
+        # Start MQTT client loop in a new thread
+        #mqtt_thread = threading.Thread(target=mqtt_loop)
+        #mqtt_thread.daemon = True  # Make the thread exit when the main program exits
+        #mqtt_thread.start()
 
-    # Start LED control loop in a separate thread
-    led_thread = threading.Thread(target=led_control_loop)
-    led_thread.daemon = True  # Make the thread exit when the main program exits
-    led_thread.start()
+        # Start LED control loop in a separate thread
+        #led_thread = threading.Thread(target=led_control_loop)
+        #led_thread.daemon = True  # Make the thread exit when the main program exits
+        #led_thread.start()
 
-    # Run Flask app
-    app.run(host='0.0.0.0', port=5001)
-    #while True:
-        #try:
-    #        app.run(host='0.0.0.0', port=5001)
-    #        time.sleep(10)  # Wait for 10 seconds before the next check
-     #   finally:
-     #       sensor.exit()
+        # Run Flask app
+        #app.run(host='0.0.0.0', port=5001)
+        #while True:
+            #try:
+        #        app.run(host='0.0.0.0', port=5001)
+        #        time.sleep(10)  # Wait for 10 seconds before the next check
+        #   finally:
+        #       sensor.exit()
+    #finally:
+        # Cleanup GPIO and stop MQTT client when exiting
+        #GPIO.cleanup()
+        #client.loop_stop()  # Stop the MQTT client loop
+        #client.disconnect()  # Disconnect from the MQTT broker
