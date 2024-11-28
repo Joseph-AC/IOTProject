@@ -89,7 +89,7 @@ void loop() {
   // // Convert the analog value to a string and publish it to MQTT
    char message[10];
    itoa(analogValue, message, 10);
-   client.publish("IoTlab/INTENSITY", message);
+   client.publish("IoTProject/INTENSITY", message);
 
 delay(500);
   // // // Check light sensor value and publish corresponding message
