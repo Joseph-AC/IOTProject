@@ -25,15 +25,17 @@ $('#water').css({
 });
 }
   
-function setTemperature(value) {
-    if (value < 0 || value > 1) {
+function setTemperature(temp) {
+
+    if (temp < 0 || temp > 40) {
         return;
     }
 
-    $('#gauge__fill').css('transform', `rotate(${ value / 2 }turn)`);
-    let newTemp = Math.round(value * 100);
-    animateValue(newTemp, $('#gauge__cover'));
+    let value = temp/40
 
+    $('#gauge__fill').css('transform', `rotate(${ value / 2 }turn)`);
+    animateValue(temp, $('#gauge__cover'));
+    console.log(value)
     if (value < 0.5) {
         document.querySelector("#gauge__fill").style.backgroundColor = 'blue';
     } else {
@@ -65,7 +67,7 @@ async function updateHumTemp() {
 
         const tempData = parseFloat(data.temperature);
         const humData = parseFloat(data.humidity);
-        
+
         if (isNaN(tempData) && isNaN(humData)) {
             throw new Error('Invalid data received from the server.');
         }
@@ -137,15 +139,15 @@ async function updateProfile()
             throw new Error('Invalid data received from the server.');
         }
 
-        
-
         if (!currentProfile || (profileData.userID != currentProfile.userID))
         {
             console.log("PP: " + currentProfile)
             currentProfile = profileData;
             $("#profile_img").attr('src', currentProfile.data["profile_image"]);
-            $("#profile_name").text(currentProfile.data["username"]);
-            $("#TH").text(`TT: ${temperatureThreshold} | LT: ${lightThreshold}`);
+            $("#profile_name").text("User: " + currentProfile.data["username"]);
+            $("#TT").text(`Temperature Threshold: ${temperatureThreshold}`);
+            $("#LT").text(`Light Threshold: ${lightThreshold}`);
+        
         }
         
 
@@ -158,7 +160,7 @@ function transmitData()
 {
     updateProfile();
     updateLED();
-    //updateHumTemp();
+    updateHumTemp();
 }
 
 transmitData();

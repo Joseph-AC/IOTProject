@@ -1,6 +1,6 @@
 import time
-import board
 import adafruit_dht
+import board
 import smtplib
 import imaplib
 import email
@@ -8,12 +8,14 @@ import RPi.GPIO as GPIO
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from Profile_Manager import userTempThreshold
+
 # GPIO Setup
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 # DHT11 Sensor configuration
-DHTPin = board.D21  # GPIO pin for DHT11 sensor
+DHTPin = board.D27  # GPIO pin for DHT11 sensor GPIO 17
 sensor = adafruit_dht.DHT11(DHTPin)
 
 # Motor control configuration
@@ -36,37 +38,37 @@ email_sent = False
 last_temp = None
 last_humidity = None
 
+def sensorOff():
+    sensor.exit()
+    GPIO.cleanup()
+
 def get_sensor_data():
     """Fetch temperature and humidity from the DHT11 sensor."""
     global last_temp, last_humidity
-    retries = 3
-    for _ in range(retries):
-        try:
-            # Uncomment and use the actual sensor readings for temp and humidity
-            #temp = sensor.temperature
-            #humidity = sensor.humidity
 
-            # Hardcoded for testing
-            temp = 20
-            humidity = 50
+    try:
+        # Uncomment and use the actual sensor readings for temp and humidity
+        temp = 30#sensor.temperature
+        humidity = 25#sensor.humidity
 
-            if temp is not None and humidity is not None:
-                last_temp, last_humidity = temp, humidity  # Cache successful readings
-                print(f"Temperature: {temp}°C, Humidity: {humidity}%, Fan Status: {'ON' if fan_on else 'OFF'}")
 
-                # Send email alert if the temperature exceeds 18°C
-                if temp > 18 and not email_sent:
-                    send_email_alert(temp)  # Ensure the temperature is passed to the function
+        if temp and humidity:
+            last_temp, last_humidity = temp, humidity  # Cache successful readings
+            print(f"Temperature: {temp}°C, Humidity: {humidity}%, Fan Status: {'ON' if fan_on else 'OFF'}")
 
-                return {
-                    'temperature': temp,
-                    'humidity': humidity,
-                    'fan': fan_on
-                }
+            # Send email alert if the temperature exceeds 18°C
+            if temp > userTempThreshold and not email_sent:
+                send_email_alert(temp)  # Ensure the temperature is passed to the function
 
-        except RuntimeError as error:
-            print(f"Sensor Error: {str(error)} - Retrying...")
-            time.sleep(1)
+            return {
+                'temperature': temp,
+                'humidity': humidity,
+                'fan': fan_on
+            }
+
+    except RuntimeError as error:
+        print(f"Sensor Error: {str(error)} - Retrying...")
+        time.sleep(5)
 
     if last_temp is not None and last_humidity is not None:
         print("Returning last known good readings.")

@@ -2,7 +2,7 @@ import asyncio
 from flask import Flask, jsonify, render_template
 
 import LED
-#import TempHum
+import TempHum
 import Profile_Manager
 import MQTT_Manager
 
@@ -20,9 +20,9 @@ def get_sensor_data():
 def get_profile_data():
     return jsonify(Profile_Manager.profileData())
 
-#@app.route('/temp-hum')
-#def get_TH_data():
- #   return jsonify(TempHum.get_sensor_data())
+@app.route('/temp-hum')
+def get_TH_data():
+    return jsonify(TempHum.get_sensor_data())
 
 
 if __name__ == '__main__':
@@ -30,6 +30,10 @@ if __name__ == '__main__':
         #Profile_Manager.setJSONPath()
         MQTT_Manager.start_MQTT()
         app.run(host='0.0.0.0', port=5001)
+        LED.sensorOn()
         asyncio.run(LED.led_control_loop())
-    finally:
+    except KeyboardInterrupt:
+        TempHum.sensorOff()
+        LED.sensorOff()
         MQTT_Manager.stop_MQTT()
+        exit() 

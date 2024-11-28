@@ -18,9 +18,9 @@ print("LED is OFF - Initial state.")
 
 #Info for intensity
 intensityData = 0
-from Profile_Manager import userTempThreshold #put this for the light code.
 from Profile_Manager import userLightThreshold
 
+loopSensor = False
 #-------------------------EMAIL----------------------------------
 
 # Email setup
@@ -56,26 +56,34 @@ def send_email():
 #-------------------------EMAIL----------------------------------
 
 async def led_control_loop():
-    try:
-        while True:
-            # Check the received MQTT message and control the LED based on the message
-            if userLightThreshold < intensityData:
-                print("LIGHT ON-----------------")
-                GPIO.output(LED, GPIO.HIGH)  # Turn on the LED if the message indicates it is dark
-                send_email()
-            elif userLightThreshold > intensityData:
-                print("TURN OFF-----------------")
-                GPIO.output(LED, GPIO.LOW)  # Turn off the LED if the message indicates it is not dark
-            sleep(1)  # Sleep for 1 second
-
-    except KeyboardInterrupt:
-        print("Program interrupted")
+    #try:
+    while loopSensor:
+        # Check the received MQTT message and control the LED based on the message
+        if userLightThreshold < intensityData:
+            print("LIGHT ON-----------------")
+            GPIO.output(LED, GPIO.HIGH)  # Turn on the LED if the message indicates it is dark
+            send_email()
+        elif userLightThreshold > intensityData:
+            print("TURN OFF-----------------")
+            GPIO.output(LED, GPIO.LOW)  # Turn off the LED if the message indicates it is not dark
+        sleep(1)  # Sleep for 1 second
+    await asyncio.sleep(1)
+    #except KeyboardInterrupt:
+      #  print("Program interrupted")
     
 def LEDData():
     ledData = {
         "intensity": intensityData,
     }
     return ledData
+
+def sensorOn():
+    global loopSensor
+    loopSensor = True
+
+def sensorOff():
+    global loopSensor
+    loopSensor = False
 
 def set_IntensityData(mqtt_message):
     global intensityData
