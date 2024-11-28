@@ -35,7 +35,7 @@ function setTemperature(temp) {
 
     $('#gauge__fill').css('transform', `rotate(${ value / 2 }turn)`);
     animateValue(temp, $('#gauge__cover'));
-    console.log(value)
+
     if (value < 0.5) {
         document.querySelector("#gauge__fill").style.backgroundColor = 'blue';
     } else {
@@ -74,6 +74,8 @@ async function updateHumTemp() {
 
         setHumidity(humData);
         setTemperature(tempData);
+
+        $("#fanMode").text(data.fan);
 
     } catch (error) {
         console.error('Error fetching sensor data:', error);
@@ -155,6 +157,32 @@ async function updateProfile()
         console.error('Error fetching sensor data:', error);
     }
 }
+
+/*const fanImg = document.getElementById('fan');
+
+// Set up the click event listener
+fan.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/toggle-fan');
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json(); // Assuming the server responds with JSON
+        console.log('Fan toggled successfully:', data); // Handle response as needed
+        
+        // Update the fan image based on the fan status
+        if (data.fan) {
+            // we use the HTML part to retrieve the images. (to find it.)
+            fanImg.src = fanOnUrl; // Use the variable defined in HTML
+        } else {
+            fanImg.src = fanUrl; // Use the variable defined in HTML
+        }
+
+    } catch (error) {
+        console.error('Error toggling fan:', error);
+    }
+});*/
 
 function transmitData()
 {

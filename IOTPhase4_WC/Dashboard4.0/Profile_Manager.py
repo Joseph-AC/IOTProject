@@ -2,11 +2,13 @@ import os
 from time import sleep
 import json
 
+import Email_Manager
+
 #Info for intensity + MQTT message
 profile_database = {
     "": {
         "username": "Jonkler",
-        "profile_image": "https://i.imgflip.com/7pmzha.jpg",
+        "profile_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9AmqnRC5e6nGOwkLsHbuRcIHgxSh2AAMCJw&s",
         "temperature_threshold": 20,
         "intensity_threshold": 2000
     },
@@ -34,7 +36,7 @@ profile_database = {
 
     "c34ad524": {
         "username": "JOnkler",
-        "profile_image": "https://i.imgflip.com/7pmzha.jpg",
+        "profile_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9AmqnRC5e6nGOwkLsHbuRcIHgxSh2AAMCJw&s",
         "temperature_threshold": 22,
         "intensity_threshold": 2200
     }
@@ -58,13 +60,15 @@ def profileData():
         return payload
 
 def set_Profile():
-    print(profile_database[userID])
     if (profile_database[userID]): 
         userProfile = profile_database[userID]
         global userTempThreshold
         userTempThreshold = userProfile['temperature_threshold']
         global userLightThreshold
         userLightThreshold = userProfile['intensity_threshold']
+        Email_Manager.send_email_profile()
+    else:
+        print("Please add the user.")
 
 def set_UserID(mqtt_message):
     global userID

@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import asyncio
 from flask import Flask, jsonify, render_template
 
 import Profile_Manager
@@ -19,6 +20,7 @@ def on_message(client, userdata, message):
         Profile_Manager.set_UserID(mqtt_message)
     if message.topic == mqtt_topic_LED:
         print(f"Intensity: {mqtt_message} (From {message.topic})")
+        #LED.set_IntensityData(int(mqtt_message))
         LED.set_IntensityData(int(mqtt_message))
 
 # Set up MQTT client and callbacks

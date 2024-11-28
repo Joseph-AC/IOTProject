@@ -31,7 +31,7 @@ if __name__ == '__main__':
         MQTT_Manager.start_MQTT()
         app.run(host='0.0.0.0', port=5001)
         LED.sensorOn()
-        asyncio.run(LED.led_control_loop())
+        #asyncio.run(LED.led_control_loop())
     except KeyboardInterrupt:
         TempHum.sensorOff()
         LED.sensorOff()
