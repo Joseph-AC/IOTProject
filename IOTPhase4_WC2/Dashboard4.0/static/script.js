@@ -44,6 +44,7 @@ function setTemperature(temp) {
 
 }
 
+var slider = document.getElementById("LED_slider");
 var output = document.getElementById("LB-cover");
 var output_value = document.getElementById("LEDValue");
 var notif = document.getElementById("notif");
@@ -51,6 +52,7 @@ var sentEmail = false;
 
 function clearNotification()
 {
+    $("#img_notif").attr('src', "../static/MailIdle.png")
     notif.innerHTML = "";
 }
 
@@ -75,7 +77,13 @@ async function updateHumTemp() {
         setHumidity(humData);
         setTemperature(tempData);
 
-        $("#fanMode").text(data.fan);
+        if (data.fan) {
+            fanImg.src = fanOn_url;
+            fanImg.classList.add("spin_animation");
+        } else {
+            fanImg.classList.remove("spin_animation");
+            fanImg.src = fanOff_url;
+        }
 
     } catch (error) {
         console.error('Error fetching sensor data:', error);
@@ -99,12 +107,14 @@ async function updateLED() {
             throw new Error('Invalid data received from the server.');
         }
 
-        output.style.opacity = (LED_Intensity/4500);
+        output.style.opacity = (LED_Intensity/5000);
         output_value.innerHTML = LED_Intensity;
+        slider.value = LED_Intensity;
 
         if (LED_Intensity < lightThreshold)
         {        
-            notif.innerHTML = "Email has been sent."
+            $("#img_notif").attr('src', "../static/MailSent.png")
+            notif.innerHTML = "Email sent."
             if (sentEmail == false)
             {
                 sentEmail = true;
@@ -147,7 +157,7 @@ async function updateProfile()
             currentProfile = profileData;
             $("#profile_img").attr('src', currentProfile.data["profile_image"]);
             $("#profile_name").text("User: " + currentProfile.data["username"]);
-            $("#TT").text(`Temperature Threshold: ${temperatureThreshold}`);
+            $("#TT").text(`Temperature Threshold: ${temperatureThreshold} °C`);
             $("#LT").text(`Light Threshold: ${lightThreshold}`);
         
         }
@@ -158,27 +168,16 @@ async function updateProfile()
     }
 }
 
-const fanImg = document.getElementById('fanIcon');
-
-// Set up the click event listener
 fanImg.addEventListener('click', async () => {
-    console.log("CLICKIN")
     try {
         const response = await fetch('/toggle-off');
 
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log('Fan toggled successfully:', data); // Handle response as needed
-        
-        // COde block for off
+        console.log('Fan toggled successfully:', data); 
 
-        /*if (data.fan) {
-            // we use the HTML part to retrieve the images. (to find it.)
-            fanImg.src = fanOnUrl; // Use the variable defined in HTML
-        } else {
-            fanImg.src = fanUrl; // Use the variable defined in HTML
-        }*/
+        
 
     } catch (error) {
         console.error('Error toggling fan:', error);
